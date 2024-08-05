@@ -1,6 +1,7 @@
 import { createHashRouter, Navigate } from 'react-router-dom'
 import Login from '@/pages/Login'
 import Home from '@/pages/Home'
+import MainPage from '@/pages/MainPage'
 import Account from '@/pages/Account'
 
 // 全局路由
@@ -24,6 +25,11 @@ export const globalRouters = createHashRouter([
     {
         path: '/',
         element: <Home />,
+    },
+     // 如果URL没有"#路由"，跳转Home页面
+     {
+        path: '/main',
+        element: <MainPage />,
     },
     // 未匹配，，跳转Login页面
     {
