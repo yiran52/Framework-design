@@ -22,7 +22,7 @@ export const useModel = create<PageState>((set,get) => ({
   loadLocalData: async (params?: any) => {
     set({ loading: true });
     try {
-      const response = await fetchData(params);
+      const response = await fetchData();
       set({ localData: response.data });
     } catch (error) {
       console.error('Failed to fetch data:', error);

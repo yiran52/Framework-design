@@ -147,11 +147,22 @@ export const apiRequest = (config: any) => {
             config.done?.();
         });
 }
+const axiosInstance = axios.create({
+    baseURL: '/api',
+    timeout: 1000,
+    headers: { 'Content-Type': 'application/json' },
+});
 
-// src/api/api.ts
-export const fetchData = async (params:string): Promise<any> => {
-    // 模拟 API 请求
-    return { data: [{ id: 1, name: 'John Doe', value: 'admin' }] };
+export const fetchData = async (): Promise<any> => {
+    try {
+      const res = await axiosInstance.get('/login');
+      const result = res.data.data;
+      return { data: [{ id: result.loginUid, name: result.nickname, value: result.token }] };
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+      Modal.error({ title: API_FAILED });
+      throw error; // 抛出错误，以便在调用方处理
+    }
   };
   
 export const fetchConfig = async (id: string): Promise<any> => {
