@@ -18,7 +18,8 @@ export const useModel = create<PageState>((set,get) => ({
   config: null,
   loading: false,
   configId: null,
-
+  
+//如果是单个组件消费的数据将请求通过useRequest来处理，如果是整个页面子组件都要消费的数据，放在全局里管理
   loadLocalData: async (params?: any) => {
     set({ loading: true });
     try {

@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import { Layout } from 'antd';
 import SearchForm from './SearchForm';
 import DataTable from './DataTable';
+import {DemoLine} from '../EchartInstance'
 import ConfigDrawer from './ConfigDrawer';
 import { useModel } from './useModel';
 import { useGlobalStore } from '../../store/globalStore';
-
+import Pagination from '@/pages/ahooksInstance/usePagination'
 const { Header, Content } = Layout;
 
 const MainPage: React.FC = () => {
@@ -20,11 +21,10 @@ const MainPage: React.FC = () => {
   return (
     <Layout>
       <Header>
-        <SearchForm />
       </Header>
       <Content>
-        <DataTable />
-        <ConfigDrawer />
+      <DemoLine />
+      <Pagination />
       </Content>
     </Layout>
   );

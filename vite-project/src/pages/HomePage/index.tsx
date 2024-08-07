@@ -8,7 +8,8 @@ const { Header, Content, Sider } = Layout;
 const TopItems: MenuProps['items'] = [
     {
         key: 'main',
-        label: '主页'
+        label: '主页',
+        disabled:true
     },
     {
         key: 'personal',
@@ -16,7 +17,7 @@ const TopItems: MenuProps['items'] = [
     },
     {
         key: 'setting',
-        label: <div style={{color:'grey'}}>设置</div>
+        label: <div style={{ color: 'grey' }}>设置</div>
     }
 ]
 
@@ -42,14 +43,14 @@ const items2: MenuProps['items'] = [UserOutlined, LaptopOutlined, NotificationOu
 
 
 const HomePage: React.FC = () => {
-    
+
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
     const navigate = useNavigate()
 
-    const skipRoute = (e: any) => {
+    const skipRoute = (e: { key: string; [propName: string]: any }) => {
         navigate(e.key)
     }
 
