@@ -4,12 +4,8 @@ import { globalConfig } from '@/globalConfig'
 
 // 配合教程演示组件外路由跳转使用，无实际意义
 export const goto = (path: string) => globalRouters.navigate(path);
-
-// 开发环境地址
-let API_DOMAIN = '/api/';
-if (process.env.NODE_ENV === 'production') {
-    API_DOMAIN = 'http://xxxxx/api/';
-}
+//区分开发环境
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 // 用户登录信息在localStorage中存放的名称
 export const SESSION_LOGIN_INFO = globalConfig.SESSION_LOGIN_INFO;
 

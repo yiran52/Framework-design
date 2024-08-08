@@ -1,10 +1,9 @@
 import { usePagination } from 'ahooks';
-import { useUpdateEffect } from 'ahooks';
 import { Pagination } from 'antd';
 import Mock from 'mockjs';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-interface UserListItem {
+interface UserListItem { 
   id: string;
   name: string;
   gender: 'male' | 'female';
@@ -12,7 +11,7 @@ interface UserListItem {
   disabled: boolean;
 }
 
-const userList = (current: number, pageSize: number) =>
+const userList = (_current: number, pageSize: number) =>
   Mock.mock({
     total: 55,
     [`list|${pageSize}`]: [
