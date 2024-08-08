@@ -4,8 +4,16 @@ import { globalConfig } from '@/globalConfig'
 
 // 配合教程演示组件外路由跳转使用，无实际意义
 export const goto = (path: string) => globalRouters.navigate(path);
-//区分开发环境
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
+const baseUrl = process.env.NODE_ENV === 'production' 
+  ? import.meta.env.VITE_API_BASE_URL 
+  : '/api';
+
+// 发起请求
+fetch(`${baseUrl}/data`)
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Error fetching data:', error));
+
 // 用户登录信息在localStorage中存放的名称
 export const SESSION_LOGIN_INFO = globalConfig.SESSION_LOGIN_INFO;
 

@@ -8,9 +8,9 @@ export default defineConfig({
     open: '/',
     proxy: {
       '/api': {
-        target: import.meta.env.VITE_API_BASE_URL, // 使用环境变量配置目标
+        target: 'https://user-api.example-test.com', // 使用环境变量配置目标
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''), // 去掉 /api 前缀
+        // rewrite: (path) => path.replace(/^\/api/, ''), // 去掉 /api 前缀
       },
     },
   },
