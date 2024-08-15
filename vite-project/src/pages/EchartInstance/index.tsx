@@ -26,6 +26,7 @@ export const DemoLine = () => {
     data,
     xField: 'year',
     yField: 'value',
+
     seriesField: 'type',
     point: {
       size: 5,
@@ -39,15 +40,15 @@ export const DemoLine = () => {
     lineStyle: {
       lineWidth: 2,
     },
-    label:{
-        position: 'top', // 标签位置在数据点的上方
-        style: {
-          fill: 'red', // 文本颜色
-          fontSize: 12, // 字体大小
-          fontWeight: 'bold', // 字体粗细
-          opacity: 0.6, // 文本透明度
-        },
-        offset: 10, // 文本与数据点的距离为10
+    label: {
+      position: 'top', // 标签位置在数据点的上方
+      style: {
+        fill: 'red', // 文本颜色
+        fontSize: 12, // 字体大小
+        fontWeight: 'bold', // 字体粗细
+        opacity: 0.6, // 文本透明度
+      },
+      offset: 10, // 文本与数据点的距离为10
     }
   };
 
