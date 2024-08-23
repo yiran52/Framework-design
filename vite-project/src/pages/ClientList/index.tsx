@@ -1,29 +1,81 @@
-import React, { useState } from 'react';
-import { Table, Button, Input, Form, Space, Pagination } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Table, Button, Input, Form, Space, message } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import styles from './index.module.less'
-interface Customer {
-    key: string;
-    name: string;
-    deviceCount: number;
-    phone: string;
-    address: string;
-    addedTime: string;
-}
-
-const initialData: Customer[] = [
-    { key: '1', name: 'sy3', deviceCount: 0, phone: '32000156460', address: '0', addedTime: '2023-10-19 15:19:55' },
-    { key: '2', name: 'sy2', deviceCount: 0, phone: '32000156459', address: '0', addedTime: '2023-10-19 15:17:45' },
-    { key: '3', name: 'sy1', deviceCount: 0, phone: '32000156458', address: '0', addedTime: '2023-10-19 15:16:13' },
-    { key: '4', name: 'hh', deviceCount: 0, phone: '32000156457', address: 'yq', addedTime: '2023-10-19 15:13:57' },
-    { key: '5', name: 'wg', deviceCount: 0, phone: '32000156453', address: 'wg', addedTime: '2023-10-19 15:05:51' },
-    { key: '6', name: 'HBMS', deviceCount: 0, phone: '32000156451', address: 'aili', addedTime: '2023-10-19 12:26:47' },
-    { key: '7', name: '华北模块', deviceCount: 11, phone: '13522857725', address: '暂无', addedTime: '2022-01-20 18:03:21' },
-];
-
-const CustomerTable: React.FC = () => {
-    const [data, setData] = useState(initialData);
+import { useRequest } from 'ahooks';
+import styles from './index.module.less';
+import { Customer } from './interface'
+import useModel from './useModel'
+import AddCustomerModal from './AddCustomerModal'
+const ClientList: React.FC = () => {
+    const [customers, setCustomers] = useState<Customer[]>([]);
+    const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
     const [form] = Form.useForm();
+    const { showModal, hideModal } = useModel()
+
+    // 获取客户数据
+    const { run: fetchCustomers, loading, refresh: customerrefresh } = useRequest(() =>
+        fetch('/afterapi/blue-admin/api/rpc/user').then(res => {
+            let data = res.json()
+            console.log(1111, data)
+            return data
+        }), {
+        manual: true,
+        onSuccess: (result) => {
+            setCustomers(result.data);
+            setFilteredCustomers(result.data);
+        }
+    }
+    );
+
+    // 添加客户数据
+    const { run: saveCustomer } = useRequest((newCustomer) =>
+        fetch('/api/addCustomer', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newCustomer),
+        }).then(res => res.json()), {
+        manual: true,
+        onSuccess: () => {
+            customerrefresh();
+            hideModal()
+        },
+        onError: (error) => {
+            // 请求失败后执行的回调
+            message.error('添加失败，请重试:' + error);
+
+        },
+    }
+    );
+
+    // 编辑客户数据
+    const { run: updateCustomer } = useRequest((updatedCustomer) =>
+        fetch(`/api/editCustomer/${updatedCustomer.key}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedCustomer),
+        }).then(res => res.json()), {
+        manual: true,
+        onSuccess: customerrefresh,
+    }
+    );
+
+    // 删除客户数据
+    const { run: removeCustomer } = useRequest((key) =>
+        fetch(`/api/deleteCustomer/${key}`, {
+            method: 'DELETE',
+        }).then(res => res.json()), {
+        manual: true,
+        onSuccess: customerrefresh,
+    }
+    );
+
+    useEffect(() => {
+        fetchCustomers();
+    }, []);
 
     const columns = [
         {
@@ -35,7 +87,7 @@ const CustomerTable: React.FC = () => {
             title: '设备数量',
             dataIndex: 'deviceCount',
             key: 'deviceCount',
-            render: (text: number) => <a>{text}</a>,
+            render: (text: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined) => <a>{text}</a>,
         },
         {
             title: '手机号',
@@ -55,15 +107,15 @@ const CustomerTable: React.FC = () => {
         {
             title: '操作',
             key: 'action',
-            render: (_: any, record: Customer) => (
+            render: (_: any, record: { key: any; }) => (
                 <Space size="middle">
-                    <Button type="primary" icon={<EditOutlined />}>
+                    <Button type="primary" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
                         编辑
                     </Button>
                     <Button type="default" icon={<PlusOutlined />}>
                         绑定设备
                     </Button>
-                    <Button type="primary" danger icon={<DeleteOutlined />}>
+                    <Button type="primary" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.key)}>
                         删除
                     </Button>
                 </Space>
@@ -72,9 +124,20 @@ const CustomerTable: React.FC = () => {
     ];
 
     const handleSearch = () => {
+        fetchCustomers()
         const values = form.getFieldsValue();
-        const filteredData = initialData.filter(item => item.phone.includes(values.phone));
-        setData(filteredData);
+        const filteredData = customers.filter((item) =>
+            item.phone.includes(values.phone)
+        );
+        setFilteredCustomers(filteredData);
+    };
+
+    const handleDelete = (key: any) => {
+        removeCustomer(key);
+    };
+
+    const handleEdit = (record: { key: any; }) => {
+        updateCustomer(record);
     };
 
     return (
@@ -89,24 +152,34 @@ const CustomerTable: React.FC = () => {
                     </Button>
                 </Form.Item>
                 <Form.Item>
-                    <Button>重置</Button>
+                    <Button onClick={() => {
+                        form.resetFields();
+                        fetchCustomers();
+                    }}>重置</Button>
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary">+ 添加</Button>
+                    <Button type="primary" onClick={showModal}>
+                        + 添加
+                    </Button>
                 </Form.Item>
             </Form>
             <Table
                 columns={columns}
-                dataSource={data}
+                loading={loading}
+                dataSource={filteredCustomers}
                 pagination={{
-                    total: data.length,
+                    total: filteredCustomers.length,
                     showTotal: total => `共 ${total} 条`,
                     pageSize: 10,
                     showQuickJumper: true,
                 }}
             />
+            <AddCustomerModal saveCustomer={saveCustomer} />
         </div>
     );
 };
 
-export default CustomerTable;
+export default ClientList;
+
+
+

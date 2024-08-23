@@ -1,8 +1,8 @@
-import { createBrowserRouter } from 'react-router-dom';
+import React from 'react';
 import Asic from '@/pages/Asic';
 import MainPage from '@/pages/MainPage';
 import ClientList from '@/pages/ClientList';
-import React from 'react';
+import { createBrowserRouter } from 'react-router-dom';
 import { MenuItem, menuItems } from '../pages/Menu/menuItem'
 // 定义页面组件映射
 const pageComponents: { [key: string]: React.ComponentType } = {
@@ -22,7 +22,6 @@ const convertMenuItemsToRoutes: any = (items: MenuItem[]) => {
         if (item.children) {
             return convertMenuItemsToRoutes(item.children);
         }
-
         if (item.path) {
             return {
                 path: item.path,

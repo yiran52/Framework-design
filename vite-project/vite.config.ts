@@ -8,7 +8,7 @@ export default defineConfig({
     open: '/',
     proxy: {
       '/api': {
-        target: 'https://user-api.example-test.com', // 使用环境变量配置目标
+        target: '', // 使用环境变量配置目标
         changeOrigin: true,
         // rewrite: (path) => path.replace(/^\/api/, ''), // 去掉 /api 前缀
       },
